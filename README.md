@@ -3,7 +3,8 @@ html 5 game using websocket (ws lib)
 
 A simple io game built with websocket and HTML5 canvas on top of NodeJS.
 
-![alt text](http://image.noelshack.com/fichiers/2018/51/1/1545087346-screenshot-1.png)
+![alt text](http://image.noelshack.com/fichiers/2018/51/1/1545087481-screenshot-at-2018-12-17-23-46-58.png)
+![alt text](http://image.noelshack.com/fichiers/2018/51/1/1545087514-screenshot-at-2018-12-17-23-48-47.png)
 
 #### Requirements
 To run / install this game, you'll need:
