@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+	<title>squared</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<canvas id='canvas'></canvas>
+	<div id='startMenuWrapper'>
+		<div id='startMenu'>
+			<h1>Projet_01</h1>
+			<form id='form'>
+				<input type='text' tabindex='0' placeholder='your name here' id='playerNameInput' minlength='4' maxlength='16' autofocus autocomplete='off' ><br>
+				<button id='startButton'>HIT TO START</button><br>
+			</form>
+			
+			<div id='instruction'>
+				<h2><strong>kill and survive</strong></h2>
+				<ul class='list'>
+					<li><span class='commande_desc'>left</span> <span class='commande'> left arrow key or s</span></li>
+					<li><span class='commande_desc'>right</span> <span class='commande'> right arrow key or a</span></li>
+					<li><span class='commande_desc'>up</span> <span class='commande'> up arrow key or w</span></li>
+					<li><span class='commande_desc'>shoot </span><span class='commande'>right click</span></li>
+				</ul>
+			</div>
+			<footer id='footer-link'>
+				<a href='changelog.txt'>github</a> <span>-</span>
+				<a href='contact.html'>contact</a>
+			</footer>
+		</div>
+	</div>
+	<script src='class/particle.js'></script>
+	<script src='class/utils.js'></script>
+	<script src='client.js'></script>
+</body>
+</html>
