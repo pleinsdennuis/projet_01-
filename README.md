@@ -25,6 +25,6 @@ After downloading all the dependencies, you can run the server with the followin
 ```
 npm run dev
 ```
-![npm run dev](http://image.noelshack.com/fichiers/2018/51/2/1545147553-screenshot-2.png)
+![npm_run_dev](http://image.noelshack.com/fichiers/2018/51/2/1545147553-screenshot-2.png)
 
 Open browser and go to `http://localhost:8080` to run the game !
