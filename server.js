@@ -4,7 +4,6 @@ server = new WebSocket.Server({ port: 40510 }),
 express = require('express'),
 ent = require('ent'),
 encode = require('ent/encode'),
-decode = require('ent/decode'),
 app = express(),
 MAP = {x:6080, y:2400},
 playerLength = 100,
@@ -39,9 +38,6 @@ particle = {
 
 let users = [];
 let balls = [];
-
-let leaderboard = [];
-let leaderboardChange = false;
 
 app.use(express.static(__dirname + '/public'));
 
@@ -86,32 +82,24 @@ server.on('connection', (ws, req) => {
 	const ip = req.connection.remoteAddress;
 	const DIRECTION = {LEFT:0, RIGHT:0, DOWN:0, UP:0};
 	const thrust = {x:0, y:0};
-	let username;
 	let DATA = 0;
-	let isShoot = 0;
-	console.log('[INFO] #'+currentPlayerMin.id+' s\'est connecté');
-	
+	let isShoot = 0;	
 	ws.on('message', data => {
 		DATA = JSON.parse(data);
-		if (DATA.username) {
-			username = ent.encode(DATA.username);
-			
+		if (DATA.username) {			
 			currentPlayerMin.id = createId();
 			currentPlayer.x = 0;//randomInt(0, MAP.x-playerLength); 
 			currentPlayer.y = -100;
 			currentPlayerMin.hp = 100;
-			currentPlayerMin.username = ent.decode(username);
+			currentPlayerMin.username = ent.encode(DATA.username);
 			currentPlayerMin.score = 0;
-
-			console.log(currentPlayerMin);
-
 			if (users.indexOf(currentPlayerMin) < 0) {
 				users.push(currentPlayerMin);
 				ws.send(JSON.stringify({id:currentPlayerMin.id}));
 				server.clients.forEach(client => {
 					client.send(JSON.stringify({users:users}));
 				});
-				console.log('[INFO] #'+currentPlayerMin.username+' a rejoint');
+				console.log('[INFO] '+currentPlayerMin.username+' (#'+currentPlayerMin.id+') joined');
 			}	
 		}
 
@@ -138,8 +126,6 @@ server.on('connection', (ws, req) => {
 			DIRECTION.UP = DATA.DIRECTION.UP;
 		}
 
-		//thrust.x = DIRECTION.LEFT ? -THRUST : 0;
-		//thrust.x = DIRECTION.LEFT ? THRUST : 0;
 		if (DIRECTION.LEFT) thrust.x = -THRUST;
 		else if (!DIRECTION.RIGHT) thrust.x = 0;
 		if (DIRECTION.RIGHT) thrust.x = THRUST;
@@ -181,16 +167,13 @@ server.on('connection', (ws, req) => {
 		else {
 			currentPlayer.gravity = 1;
 		}
-
+		
 		if (currentPlayerMin.hp > 0) {
 			currentPlayer.accelerate(thrust.x, thrust.y);
 			currentPlayer.update();
-		}
-		
+		}		
 		currentPlayerMin.x = currentPlayer.x;
 		currentPlayerMin.y = currentPlayer.y;;
-
-
 		for (let i = 0; i < balls.length; i++) {
 			balls[i].update();
 			if (pointInRect(balls[i].x, balls[i].y, currentPlayer) && balls[i].id != currentPlayerMin.id) {
@@ -199,8 +182,7 @@ server.on('connection', (ws, req) => {
 			}
 		}
 		balls = balls.filter(ball=>(Math.abs(ball.vx)>5||Math.abs(ball.vy)>5));
-	}, 16);
-
+	}, 16); // calcul position every 16ms
 
 	setInterval(()=> {
 		if(ws.readyState === WebSocket.OPEN) {
@@ -211,37 +193,14 @@ server.on('connection', (ws, req) => {
 			server.clients.forEach(client => {client.send(JSON.stringify({users:users}));});			
 			setTimeout(()=>{users = users.filter(user=>user.id != currentPlayerMin.id);}, 200);
 		}
-	}, 33);
-
-	setInterval(()=> {
-		if (users.length>0) {
-			users.sort((a, b)=>{return b.score-a.score;})
-			const topUsers = [];
-			for (let i = 0; i < Math.min(5, users.length); i++) {
-				topUsers.push({id:users[i].id, username:users[i].username, score:users[i].score});
-			}
-
-			if (isNaN(leaderboard) || leaderboard.leaderboard !== topUsers.length) {
-				leaderboard = topUsers;
-				leaderboardChange = true;
-			} else {
-				for (let i = 0; i < leaderboard.length; i++) {
-					if (leaderboard[i].id != topUsers[i].id) {
-						leaderboard = topUsers;
-						leaderboardChange = true;
-						break;
-					}
-				}
-			}
-		}
-	}, 2500);
+	}, 33); // send users info every 33ms
 
 	ws.on('close', () => {
 		if (currentPlayerMin.hp > 0) users.splice(users.indexOf(currentPlayerMin), 1);
 		server.clients.forEach(client => {
 			client.send(JSON.stringify({users:users}));
 		});
-		console.log('[INFO] #'+currentPlayerMin.id+' s\'est déconnecté');
+		console.log('[INFO] '+currentPlayerMin.username+' (#'+currentPlayerMin.id+') left the game');
 	});
 });
 app.listen(8080);
