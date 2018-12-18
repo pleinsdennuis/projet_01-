@@ -20,12 +20,11 @@
 	currentPlayer.friction = 0.8;
 	currentPlayer.hp = 0;
 
-	let currentPlayerID = 0;
-	let users = [];
-	let ballsServer = [];
-	let data = 0;
-	let isMove = 0;
-	let angle = 0;
+	let currentPlayerID = 0,
+	users = [],
+	ballsServer = [],
+	data = 0,
+	angle = 0;
 
 	const rects = [];
 
@@ -112,10 +111,10 @@
 				drawPerso(users[i], 0, 'red', 'darkred');
 			} else {
 				drawPerso(users[i], angle, 'green', 'darkgreen');
+				//current player infos from the serv
 				currentPlayer.x = users[i].x;
 				currentPlayer.y = users[i].y;
 				currentPlayer.hp = users[i].hp;
-				//startMenuWrapper.hidden = currentPlayer.hp <= 0 ? false : true;
 				if (currentPlayer.hp <= 0) {
 					startMenuWrapper.hidden = false;
 				}
@@ -124,6 +123,10 @@
 				}
 			}
 		}
+		/*
+		local calcul usefull for prediction
+		particle.accelerate(thrust.x, thrust.y);
+		particle.update();*/
 		drawBalls(ballsServer, 'red');
 		ballsServer = ballsServer.filter(ballServer=>Math.abs(ballServer.vx)>5||Math.abs(ballServer.vy)>5);
 		context.strokeStyle = 'black';
@@ -149,54 +152,52 @@
 		}
 		shoot(currentPlayer.x+playerLength*.5, currentPlayer.y+playerLength*.5, angle, balls);
 	});
-
+	// set thrust to calcul position of current player locally
 	document.addEventListener('keydown', event =>{
 		switch(event.key){
 			case 'z': case 'Z': case 'ArrowUp':
 				DIRECTION.UP = 1;
-				thrust.y = -1;
+				//thrust.y = -1;
 				break;
 			case 's': case 'S': case 'ArrowDown':
 				DIRECTION.DOWN = 1;
-				thrust.y = 1;
+				//thrust.y = 1;
 				break;
 			case 'd': case 'D': case 'ArrowRight':
 				DIRECTION.RIGHT = 1;
-				thrust.x = THRUST;
+				//thrust.x = THRUST;
 				break;
 			case 'q': case 'Q': case 'ArrowLeft':
 				DIRECTION.LEFT = 1;
-				thrust.x = -THRUST;
+				//thrust.x = -THRUST;
 				break;
 			default: return false;
 		}
 		if (ws.readyState == 1) ws.send(JSON.stringify({DIRECTION:DIRECTION}));
-		isMove = DIRECTION.LEFT||DIRECTION.RIGHT||DIRECTION.DOWN||DIRECTION.UP;
 		return false;
 	});
-
+	// same here
 	document.addEventListener('keyup',  event =>{
 		switch(event.key) {
 			case 'z': case 'Z': case 'ArrowUp':
 				DIRECTION.UP = 0;
-				thrust.y = 0;
+				//thrust.y = 0;
 				break;
 			case 's': case 'S': case 'ArrowDown':
 				DIRECTION.DOWN = 0;
-				thrust.y = 0;
+				//thrust.y = 0;
 				break;
 			case 'd': case 'D': case 'ArrowRight':
 				DIRECTION.RIGHT = 0;
-				thrust.x = 0;
+				//thrust.x = 0;
 				break;
 			case 'q': case 'Q': case 'ArrowLeft':
 				DIRECTION.LEFT = 0;
-				thrust.x = 0;
+				//thrust.x = 0;
 				break;
 			default: return false;
 		}
 		if (ws.readyState == 1) ws.send(JSON.stringify({DIRECTION:DIRECTION}));
-		isMove = DIRECTION.LEFT||DIRECTION.RIGHT||DIRECTION.DOWN||DIRECTION.UP; 
 		return false;
 	});
 })();
